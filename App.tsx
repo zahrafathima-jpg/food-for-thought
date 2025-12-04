@@ -11,22 +11,26 @@ export default function App() {
 
   // --- Initialization & Deep Link Logic ---
   useEffect(() => {
-    // 1. Determine the Base URL (stripped of params)
-    const url = new URL(window.location.href);
-    const baseUrl = `${url.origin}${url.pathname}`;
-    
-    // 2. generate the link for students (appends ?mode=student)
-    const studentLink = `${baseUrl}?mode=student`;
-    
-    // 3. Generate the QR code image URL pointing to that student link
-    // We use a darker color for the QR dots (#4A4E69) to match the theme
-    const qrImage = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(studentLink)}&color=4A4E69&bgcolor=F7F3E8&margin=10`;
-    setQrUrl(qrImage);
+    try {
+      // 1. Determine the Base URL (stripped of params)
+      const url = new URL(window.location.href);
+      const baseUrl = `${url.origin}${url.pathname}`;
+      
+      // 2. generate the link for students (appends ?mode=student)
+      const studentLink = `${baseUrl}?mode=student`;
+      
+      // 3. Generate the QR code image URL pointing to that student link
+      // We use a darker color for the QR dots (#4A4E69) to match the theme
+      const qrImage = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(studentLink)}&color=4A4E69&bgcolor=F7F3E8&margin=10`;
+      setQrUrl(qrImage);
 
-    // 4. Check if WE are the student (did we arrive via the link?)
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('mode') === 'student') {
-      setStep('input');
+      // 4. Check if WE are the student (did we arrive via the link?)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'student') {
+        setStep('input');
+      }
+    } catch (e) {
+      console.error("Initialization error:", e);
     }
   }, []);
 
@@ -240,68 +244,6 @@ export default function App() {
       {/* Decorative Background Blob - Center */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#F6BD60] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
       
-      <style>{`
-        /* Animation Definitions */
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes scan {
-          0% { transform: scaleX(0); }
-          100% { transform: scaleX(1); }
-        }
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-        @keyframes heartbeat {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.02); }
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* Utility Classes */
-        .animate-fade-in-up {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-        .animate-fade-in {
-          animation: fadeIn 0.8s ease-out forwards;
-        }
-        .animate-scale-in {
-          animation: scaleIn 0.5s ease-out forwards;
-        }
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-        .animate-heartbeat {
-           animation: heartbeat 2s ease-in-out infinite;
-        }
-        .animate-blob {
-            animation: blob 7s infinite;
-        }
-        
-        .animation-delay-2000 { animation-delay: 2s; }
-        .animation-delay-4000 { animation-delay: 4s; }
-        .delay-100 { animation-delay: 100ms; }
-        .delay-200 { animation-delay: 200ms; }
-        .delay-300 { animation-delay: 300ms; }
-        .delay-500 { animation-delay: 500ms; }
-      `}</style>
-
       {/* Main Card Container */}
       <main className="w-full max-w-lg relative z-10 flex flex-col justify-center">
         {step === 'landing' && renderLanding()}
