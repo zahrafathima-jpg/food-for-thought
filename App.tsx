@@ -20,8 +20,9 @@ export default function App() {
       const studentLink = `${baseUrl}?mode=student`;
       
       // 3. Generate the QR code image URL pointing to that student link
-      // Using a reliable API and ensuring high contrast
-      const qrImage = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(studentLink)}&color=4A4E69&bgcolor=FFFFFF&margin=20`;
+      // Using 'ecc=Q' for High Error Correction (makes it easier to scan)
+      // Using 'color=000000' for Maximum Contrast
+      const qrImage = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(studentLink)}&color=000000&bgcolor=FFFFFF&margin=10&ecc=Q`;
       setQrUrl(qrImage);
 
       // 4. Check if WE are the student (did we arrive via the link?)
@@ -119,27 +120,43 @@ export default function App() {
   // 1. Landing Screen (The Scanner Image)
   const renderLanding = () => (
     <div className="w-full flex flex-col items-center justify-center min-h-[60vh] text-center">
-      <div className="mb-8 p-3 bg-white rounded-3xl shadow-[0_20px_50px_-10px_rgba(74,78,105,0.15)] border-4 border-[#F7E1D7] relative animate-float">
-        {/* Dynamic QR Code pointing to this site */}
-        {qrUrl ? (
-             <img 
-             src={qrUrl} 
-             alt="Scan to Start" 
-             className="w-64 h-64 rounded-xl"
-             style={{ display: 'block' }} 
-           />
-        ) : (
-            <div className="w-64 h-64 bg-gray-50 rounded-xl flex items-center justify-center text-sm text-[#9A8C98] font-medium animate-pulse">
-                Generating QR...
-            </div>
-        )}
+      <div className="relative group mb-8">
+        {/* Scanner Frame */}
+        <div className="p-4 bg-white rounded-3xl shadow-[0_20px_50px_-10px_rgba(74,78,105,0.2)] border-4 border-[#F7E1D7] relative z-10">
+            
+            {/* Corner Brackets for Viewfinder Effect */}
+            <div className="absolute top-3 left-3 w-8 h-8 border-t-4 border-l-4 border-[#84A59D] rounded-tl-lg"></div>
+            <div className="absolute top-3 right-3 w-8 h-8 border-t-4 border-r-4 border-[#84A59D] rounded-tr-lg"></div>
+            <div className="absolute bottom-3 left-3 w-8 h-8 border-b-4 border-l-4 border-[#84A59D] rounded-bl-lg"></div>
+            <div className="absolute bottom-3 right-3 w-8 h-8 border-b-4 border-r-4 border-[#84A59D] rounded-br-lg"></div>
+
+            {/* Dynamic QR Code pointing to this site */}
+            {qrUrl ? (
+                <div className="relative overflow-hidden rounded-xl">
+                    <img 
+                        src={qrUrl} 
+                        alt="Scan QR Code" 
+                        className="w-72 h-72 block object-contain"
+                    />
+                    {/* Laser Scanner Animation */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-[#F28482]/50 shadow-[0_0_15px_#F28482] animate-[scan_2.5s_linear_infinite]"></div>
+                </div>
+            ) : (
+                <div className="w-72 h-72 bg-gray-50 rounded-xl flex items-center justify-center text-sm text-[#9A8C98] font-medium animate-pulse">
+                    Generating Code...
+                </div>
+            )}
+        </div>
+        
+        {/* Decorative shadow blob under the card */}
+        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-3/4 h-8 bg-black/5 blur-xl rounded-full z-0"></div>
       </div>
 
       <h1 className="text-5xl font-serif text-[#4A4E69] mb-4 tracking-tight animate-fade-in-up">
         Scan to Start
       </h1>
       <p className="text-[#9A8C98] mb-12 text-lg font-light max-w-sm leading-relaxed animate-fade-in-up delay-100">
-        Point your camera at the QR code to receive your daily message of inspiration.
+        Point your camera at the code to unlock your daily inspiration.
       </p>
 
       {/* Manual Entry Fallback */}
