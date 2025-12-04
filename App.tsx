@@ -20,8 +20,8 @@ export default function App() {
       const studentLink = `${baseUrl}?mode=student`;
       
       // 3. Generate the QR code image URL pointing to that student link
-      // We use a darker color for the QR dots (#4A4E69) to match the theme
-      const qrImage = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(studentLink)}&color=4A4E69&bgcolor=F7F3E8&margin=10`;
+      // Using a reliable API and ensuring high contrast
+      const qrImage = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(studentLink)}&color=4A4E69&bgcolor=FFFFFF&margin=20`;
       setQrUrl(qrImage);
 
       // 4. Check if WE are the student (did we arrive via the link?)
@@ -36,44 +36,46 @@ export default function App() {
 
   // --- Confetti Logic ---
   const triggerConfetti = useCallback(() => {
-    if (window.confetti) {
-      // 1. Center burst
-      window.confetti({
-        particleCount: 180,
-        spread: 120,
-        origin: { y: 0.6 },
-        colors: BRAND_COLORS_LIST,
-        zIndex: 1000,
-        scalar: 1.2,
-        ticks: 200, // Stay on screen longer
-        gravity: 0.8,
-      });
+    if (typeof window.confetti !== 'function') return;
+
+    // 1. Center burst
+    window.confetti({
+      particleCount: 180,
+      spread: 120,
+      origin: { y: 0.6 },
+      colors: BRAND_COLORS_LIST,
+      zIndex: 1000,
+      scalar: 1.2,
+      ticks: 200, // Stay on screen longer
+      gravity: 0.8,
+    });
+    
+    // 2. Left and Right "Cannons" for a big pop effect
+    const end = Date.now() + 1000;
+    const colors = BRAND_COLORS_LIST;
+
+    (function frame() {
+      if (typeof window.confetti !== 'function') return;
       
-      // 2. Left and Right "Cannons" for a big pop effect
-      const end = Date.now() + 1000;
-      const colors = BRAND_COLORS_LIST;
+      window.confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.7 },
+        colors: colors
+      });
+      window.confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.7 },
+        colors: colors
+      });
 
-      (function frame() {
-        window.confetti && window.confetti({
-          particleCount: 3,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0, y: 0.7 },
-          colors: colors
-        });
-        window.confetti && window.confetti({
-          particleCount: 3,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1, y: 0.7 },
-          colors: colors
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      }());
-    }
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
   }, []);
 
   // --- Quote Logic ---
@@ -116,29 +118,32 @@ export default function App() {
 
   // 1. Landing Screen (The Scanner Image)
   const renderLanding = () => (
-    <div className="animate-fade-in-up w-full flex flex-col items-center justify-center min-h-[50vh] text-center">
-      <div className="mb-8 p-4 bg-white rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border-4 border-[#F7E1D7] relative animate-float">
+    <div className="w-full flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <div className="mb-8 p-3 bg-white rounded-3xl shadow-[0_20px_50px_-10px_rgba(74,78,105,0.15)] border-4 border-[#F7E1D7] relative animate-float">
         {/* Dynamic QR Code pointing to this site */}
         {qrUrl ? (
              <img 
              src={qrUrl} 
              alt="Scan to Start" 
-             className="w-64 h-64 rounded-lg mix-blend-multiply"
+             className="w-64 h-64 rounded-xl"
+             style={{ display: 'block' }} 
            />
         ) : (
-            <div className="w-64 h-64 bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-400">Loading QR...</div>
+            <div className="w-64 h-64 bg-gray-50 rounded-xl flex items-center justify-center text-sm text-[#9A8C98] font-medium animate-pulse">
+                Generating QR...
+            </div>
         )}
       </div>
 
-      <h1 className="text-5xl font-serif text-[#4A4E69] mb-4 tracking-tight">
+      <h1 className="text-5xl font-serif text-[#4A4E69] mb-4 tracking-tight animate-fade-in-up">
         Scan to Start
       </h1>
-      <p className="text-[#9A8C98] mb-12 text-lg font-light max-w-sm leading-relaxed">
+      <p className="text-[#9A8C98] mb-12 text-lg font-light max-w-sm leading-relaxed animate-fade-in-up delay-100">
         Point your camera at the QR code to receive your daily message of inspiration.
       </p>
 
       {/* Manual Entry Fallback */}
-      <div className="relative group">
+      <div className="relative group animate-fade-in-up delay-200">
         <button
             onClick={() => setStep('input')}
             className="text-[#84A59D] font-medium text-sm border-b border-[#84A59D]/30 pb-0.5 hover:text-[#6D8A83] hover:border-[#6D8A83] transition-colors"
