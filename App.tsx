@@ -138,8 +138,8 @@ export default function App() {
                         alt="Scan QR Code" 
                         className="w-72 h-72 block object-contain"
                     />
-                    {/* Laser Scanner Animation */}
-                    <div className="absolute top-0 left-0 w-full h-1 bg-[#F28482]/50 shadow-[0_0_15px_#F28482] animate-[scan_2.5s_linear_infinite]"></div>
+                    {/* Laser Scanner Animation - Moving top to bottom */}
+                    <div className="absolute top-0 left-0 w-full h-1.5 bg-[#F28482] shadow-[0_0_20px_#F28482] animate-[scan-line_2s_linear_infinite] rounded-full"></div>
                 </div>
             ) : (
                 <div className="w-72 h-72 bg-gray-50 rounded-xl flex items-center justify-center text-sm text-[#9A8C98] font-medium animate-pulse">
@@ -249,7 +249,7 @@ export default function App() {
       {/* Subtle progress bar indicating auto-reset */}
       <div className="flex flex-col items-center gap-3 animate-fade-in delay-500 opacity-80">
         <div className="w-48 h-1 bg-[#E7ECEF] rounded-full overflow-hidden">
-          <div className="h-full bg-[#84A59D] animate-[scan_15s_linear_forwards] w-full origin-left"></div>
+          <div className="h-full bg-[#84A59D] animate-[scan-line_15s_linear_forwards] w-full origin-left" style={{animationName: 'scan'}}></div>
         </div>
         <p className="text-[#9A8C98] text-xs font-medium tracking-wide">Refreshing for the next student...</p>
       </div>
